@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../constants/fonts';
 
 export const StartGameStyles = StyleSheet.create({
   container: {

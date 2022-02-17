@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Alert, Button, Keyboard, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { CardComponent } from '../../components/card/card';
-import { GameStyles } from './Game.styles';
-
-import colors from '../../constants/colors';
-import { TextInputComponent } from '../../components/text-input/textInput';
+import { MainButtonComponent } from '../../components/main-button/MainButton';
 import { NumberContainerComponent } from '../../components/number-container';
+import { maxNumber, minNumber } from '../../constants/game-options';
+import { GameStyles } from './Game.styles';
 
 const generateRandomBetween = (min: number, max: number, exclude: number): number => {
     min = Math.ceil(min);
@@ -17,60 +17,70 @@ const generateRandomBetween = (min: number, max: number, exclude: number): numbe
     return random;
 }
 
-const minNumber = 1;
-const maxNumber = 100;
-
 export interface GameInput {
     userChoise: number;
     onGameOver: (numOfRounds: number) => void;
 }
 
+export const renderListItem = (guess: number, numberOfRounds: number) => (
+    <View key={guess} style={GameStyles.item}>
+        <Text style={GameStyles.itemText1}>#{numberOfRounds}</Text>
+        <Text style={GameStyles.itemText2}>{guess}</Text>
+    </View>
+);
+
 export const GameComponent = (props: GameInput) => {
 
-    const [currentGuess, setCurrentGuess] = useState(generateRandomBetween(minNumber, maxNumber, props.userChoise));
-    const [rounds, setRounds] = useState(0);
+    const firstGuess = generateRandomBetween(minNumber - 1, maxNumber, props.userChoise);
+    const [currentGuess, setCurrentGuess] = useState(firstGuess);
+    const [pastGuesses, setPastGuesses] = useState([firstGuess]);
     const minGuess = useRef(minNumber);
     const maxGuess = useRef(maxNumber);
     const { userChoise, onGameOver } = props;
     
     useEffect(() => {
-        console.log(currentGuess, userChoise);
         if (currentGuess === userChoise) {
-            onGameOver(rounds);
+            onGameOver(pastGuesses.length);
         }
     }, [currentGuess, userChoise, onGameOver]);
 
-    const setLowerNumber = () => {
-        if (currentGuess > userChoise) {
-            return Alert.alert(`Don't lie!`, 'The chosen number is lower!', [{ text: 'Sorry!', style: 'cancel'}]);
+    const setLowerNumber = () => setNumber(false, () => minGuess.current = currentGuess);
+    const setMaxNumber = () => setNumber(true, () => maxGuess.current = currentGuess);
+    const setNumber = (isMax: boolean, fn: () => void) => {
+        if ((isMax && currentGuess < userChoise) || (!isMax && currentGuess > userChoise)) {
+            return Alert.alert(`Don't lie!`, `The chosen number is ${isMax ? 'greater': 'lower'}!`, [{ text: 'Sorry!', style: 'cancel'}]);
         }
-        minGuess.current = currentGuess;
-        setCurrentGuess(generateRandomBetween(minGuess.current, maxGuess.current, currentGuess));
-        setRounds((currentRounds) => currentRounds + 1);
-    }
-    const setMaxNumber = () => {
-        if (currentGuess < userChoise) {
-            return Alert.alert(`Don't lie!`, 'The chosen number is greater!', [{ text: 'Sorry!', style: 'cancel'}]);
-        }
-        maxGuess.current = currentGuess;
-        setCurrentGuess(generateRandomBetween(minGuess.current, maxGuess.current, currentGuess));
-        setRounds((currentRounds) => currentRounds + 1);
+        fn();
+        const newGuess = generateRandomBetween(minGuess.current, maxGuess.current, currentGuess);
+        setCurrentGuess(newGuess);
+        setPastGuesses(cur => [newGuess, ...cur] as any)
     }
 
     return (
         <View style={GameStyles.container}>
             <View style={GameStyles.guessContainer}>
-                <NumberContainerComponent>
-                    {currentGuess}
-                </NumberContainerComponent>
-                <CardComponent style={GameStyles.buttonContainer}>
-                    <Button title="lower" onPress={setMaxNumber}/>
-                    <Button title="greater" onPress={setLowerNumber}/>
+                <CardComponent>
+                    <NumberContainerComponent>
+                        {currentGuess}
+                    </NumberContainerComponent>
+                    <View style={GameStyles.buttonContainer}>
+                        <MainButtonComponent onPress={setMaxNumber}>
+                            <Ionicons name="arrow-down" size={32} color="white" />
+                        </MainButtonComponent>
+                        <MainButtonComponent type='secondary' onPress={setLowerNumber}>
+                            <Ionicons name="arrow-up" size={32} color="white" />
+                        </MainButtonComponent>
+                    </View>
                 </CardComponent>
+                <View style={GameStyles.listContainer}>
+                    <ScrollView contentContainerStyle={GameStyles.list}>
+                        {pastGuesses.map((it, i) => renderListItem(it, pastGuesses.length - i))}
+                    </ScrollView>
+                </View>
             </View>
             
             <View>
-                <Button title="Restart Game" onPress={() => onGameOver(0)}/>
+                <MainButtonComponent size='big' onPress={() => onGameOver(0)}>Restart Game</MainButtonComponent>
             </View>
         </View>
     );

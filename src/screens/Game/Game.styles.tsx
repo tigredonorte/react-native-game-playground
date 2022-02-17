@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../constants/fonts';
+import { Colors } from '../../constants/colors';
 
 export const GameStyles = StyleSheet.create({
   container: {
@@ -16,5 +16,31 @@ export const GameStyles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 20,
     width: '90%'
+  },
+  item: {
+    borderColor: Colors.primary,
+    borderWidth: 1,
+    padding: 10,
+    marginTop: 10, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  itemText1: {
+    marginRight: 5,
+    color: 'black'
+  },
+  itemText2: {
+    color: Colors.primary
+  },
+  listContainer: {
+    flex: 1, // it's needed for android scroll list
+    width: '90%',
+  },
+  list: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    // flex: 1, // it's needed for android scroll list
   }
 });

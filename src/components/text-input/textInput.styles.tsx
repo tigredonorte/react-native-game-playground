@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native';
-import colors from '../../constants/colors';
+import { Colors } from '../../constants/colors';
 
 export const TextInputStyles = StyleSheet.create({
   textInput: {
     height: 30,
-    borderBottomColor: colors.border,
+    borderBottomColor: Colors.border,
     borderBottomWidth: 1,
     marginVertical: 10
   }

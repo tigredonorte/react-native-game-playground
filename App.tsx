@@ -2,18 +2,28 @@ import AppLoading from 'expo-app-loading';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { HeaderComponent } from './src/components/header/header';
+import { minNumber } from './src/constants/game-options';
 import { initStyle, loadFonts } from './src/initialize/style';
 import { GameComponent } from './src/screens/Game/Game';
 import { GameOverComponent } from './src/screens/GameOver/GameOver';
 import { StartGameComponent } from './src/screens/StartGame/StartGame';
 
 export default function App() {
-  const [ fontsLoaded ] = loadFonts();
+  const [ appLoaded, setAppLoaded ] = useState(false);
   const [ userChoise, setUserChoise ] = useState(0);
   const [ guessRounds, setGuessRounds ] = useState(0);
-  if (!fontsLoaded) {
+
+  loadFonts().then(
+    () => setAppLoaded(true), 
+    (err) => {
+      console.log(err);
+      setAppLoaded(true);
+    }
+  );
+  if (!appLoaded) {
     return <AppLoading />;
   }
+  
   initStyle();
 
   const startGameHandler = (selectedNumber: number) => {
@@ -22,11 +32,14 @@ export default function App() {
   }
 
   const restartGameHandler = () => {
-    setUserChoise(0);
+    setUserChoise(minNumber - 1);
   }
 
   const gameOverHandler = (numOfRounds: number) => {
     setGuessRounds(numOfRounds);
+    if (numOfRounds === 0) {
+      setUserChoise(minNumber - 1);
+    }
   }
 
   let content = <StartGameComponent onStartGame={startGameHandler}></StartGameComponent>;
@@ -41,7 +54,6 @@ export default function App() {
       onGameOver={restartGameHandler}
     ></GameOverComponent>;
   }
-
   return (
     <View style={styles.screen}>
       <HeaderComponent title="Guess a number"></HeaderComponent>

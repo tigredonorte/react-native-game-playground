@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
-import colors from '../../constants/colors';
+import { Colors } from '../../constants/colors';
 
 export const NumberContainerStyles = StyleSheet.create({
   container: {
-    backgroundColor: colors.primary,
+    backgroundColor: Colors.primary,
     padding: 10,
     borderRadius: 10,
     marginVertical: 10,
@@ -11,6 +11,6 @@ export const NumberContainerStyles = StyleSheet.create({
     justifyContent: 'center'
   },
   number: {
-    color: colors.primaryContrast
+    color: Colors.primaryContrast
   }
 });

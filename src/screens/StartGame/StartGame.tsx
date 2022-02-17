@@ -3,9 +3,11 @@ import { Alert, Button, Keyboard, Text, TouchableWithoutFeedback, View } from 'r
 import { CardComponent } from '../../components/card/card';
 import { StartGameStyles } from './StartGame.styles';
 
-import colors from '../../constants/colors';
+import { Colors } from '../../constants/colors';
 import { TextInputComponent } from '../../components/text-input/textInput';
 import { NumberContainerComponent } from '../../components/number-container';
+import { MainButtonComponent } from '../../components/main-button/MainButton';
+import { maxNumber, minNumber } from '../../constants/game-options';
 
 export interface StartGameInput {
     onStartGame: (selectedNumber: number) => void;
@@ -15,8 +17,8 @@ export const StartGameComponent = (props: StartGameInput) => {
 
     const [enteredValue, setEnteredValue] = useState('');
     const [confirmState, setConfirmState] = useState(false);
-    const [selectedNumer, setSelectedNumer] = useState(-1);
-
+    const [selectedNumer, setSelectedNumer] = useState(minNumber - 1);
+    const maxNumberLength = (maxNumber - 1).toString().length;
     const numberInputHandler = (inputText: string) => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''));
     }
@@ -32,10 +34,10 @@ export const StartGameComponent = (props: StartGameInput) => {
 
     const confirmInputHandler = () => {
         const chosenNumer = parseInt(enteredValue);
-        if (isNaN(chosenNumer) || chosenNumer <= 0 || chosenNumer > 99) {
+        if (isNaN(chosenNumer) || chosenNumer <= minNumber || chosenNumer >= maxNumber) {
             Alert.alert(
                 'Invalid Number', 
-                "Number has to been between 1 and 99", [
+                `Number has to been between ${minNumber + 1} and ${maxNumber - 1}`, [
                 {text: 'Okay', style: 'destructive', onPress: resetInputHandler},
             ]);
             return;
@@ -52,7 +54,7 @@ export const StartGameComponent = (props: StartGameInput) => {
             <NumberContainerComponent>
                {selectedNumer}
             </NumberContainerComponent>
-            <Button title="Start Game" onPress={startGame} color={colors.primary}/>
+            <MainButtonComponent onPress={startGame}>Start Game</MainButtonComponent>
         </CardComponent>
     }
 
@@ -68,17 +70,17 @@ export const StartGameComponent = (props: StartGameInput) => {
                         autoCapitalize='none' 
                         autoCorrect={false}
                         keyboardType='number-pad'
-                        maxLength={2}
+                        maxLength={maxNumberLength}
                         value={enteredValue}
                         onChangeText={numberInputHandler}
                     ></TextInputComponent>
 
                     <View style={StartGameStyles.buttonContainer}>
                         <View style={StartGameStyles.button}>
-                            <Button title="Confirm" onPress={confirmInputHandler} color={colors.primary}/>
+                            <MainButtonComponent onPress={confirmInputHandler}>Confirm</MainButtonComponent>
                         </View>
                         <View style={StartGameStyles.button}>
-                            <Button title="Cancel" onPress={resetInputHandler} color={colors.secondary}/>
+                            <MainButtonComponent type='secondary' onPress={resetInputHandler}>Cancel</MainButtonComponent>
                         </View>
                     </View>
                 </CardComponent>

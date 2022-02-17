@@ -25,6 +25,7 @@ export const GameStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
   itemText1: {
     marginRight: 5,
@@ -35,11 +36,10 @@ export const GameStyles = StyleSheet.create({
   },
   listContainer: {
     flex: 1, // it's needed for android scroll list
-    width: '90%',
+    width: '100%',
   },
   list: {
     flexGrow: 1,
-    alignItems: 'center',
     justifyContent: 'flex-end',
     // flex: 1, // it's needed for android scroll list
   }

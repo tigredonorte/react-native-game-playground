@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, FlatList, ScrollView, Text, View } from 'react-native';
 import { CardComponent } from '../../components/card/card';
 import { MainButtonComponent } from '../../components/main-button/MainButton';
 import { NumberContainerComponent } from '../../components/number-container';
@@ -50,17 +50,34 @@ export const GameComponent = (props: GameInput) => {
         if ((isMax && currentGuess < userChoise) || (!isMax && currentGuess > userChoise)) {
             return Alert.alert(`Don't lie!`, `The chosen number is ${isMax ? 'greater': 'lower'}!`, [{ text: 'Sorry!', style: 'cancel'}]);
         }
-        fn();
-        const newGuess = generateRandomBetween(minGuess.current, maxGuess.current, currentGuess);
+        fn.bind(this)()
+        const newGuess = generateRandomBetween(minGuess.current + 1, maxGuess.current - 1, currentGuess);
+        if (pastGuesses.includes(newGuess)) {
+            return Alert.alert(
+                `Something went wrong`,
+                `The guess number ${newGuess} is picked already!`, [{ text: 'Try again!', style: 'cancel'}]
+            );
+        }
         setCurrentGuess(newGuess);
-        setPastGuesses(cur => [newGuess, ...cur] as any)
+        setPastGuesses(cur => {
+            cur.unshift(newGuess);
+            return cur;
+        })
     }
 
     return (
         <View style={GameStyles.container}>
             <View style={GameStyles.guessContainer}>
                 <CardComponent>
-                    <NumberContainerComponent>
+                    <View style={GameStyles.buttonContainer}>
+                        <NumberContainerComponent>
+                            {minGuess.current}
+                        </NumberContainerComponent>
+                        <NumberContainerComponent>
+                            {maxGuess.current}
+                        </NumberContainerComponent>
+                    </View>
+                    <NumberContainerComponent size='big'>
                         {currentGuess}
                     </NumberContainerComponent>
                     <View style={GameStyles.buttonContainer}>
@@ -73,9 +90,15 @@ export const GameComponent = (props: GameInput) => {
                     </View>
                 </CardComponent>
                 <View style={GameStyles.listContainer}>
-                    <ScrollView contentContainerStyle={GameStyles.list}>
+                    {/* <ScrollView contentContainerStyle={GameStyles.list}>
                         {pastGuesses.map((it, i) => renderListItem(it, pastGuesses.length - i))}
-                    </ScrollView>
+                    </ScrollView> */}
+                    <FlatList
+                        keyExtractor={(item: number) => `_${item}`}
+                        contentContainerStyle={GameStyles.list}
+                        data={pastGuesses}
+                        renderItem={guess => renderListItem(guess.item, pastGuesses.length - guess.index)
+                    } />
                 </View>
             </View>
             

@@ -4,7 +4,7 @@ import { Alert, ScrollView, Text, View } from 'react-native';
 import { CardComponent } from '../../components/card/card';
 import { MainButtonComponent } from '../../components/main-button/MainButton';
 import { NumberContainerComponent } from '../../components/number-container';
-import { maxNumber, minNumber } from '../../constants/game-options';
+import { MAX_NUMBER, MIN_NUMBER } from '../../constants/game-options';
 import { GameStyles } from './Game.styles';
 
 const generateRandomBetween = (min: number, max: number, exclude: number): number => {
@@ -31,11 +31,11 @@ export const renderListItem = (guess: number, numberOfRounds: number) => (
 
 export const GameComponent = (props: GameInput) => {
 
-    const firstGuess = generateRandomBetween(minNumber - 1, maxNumber, props.userChoise);
+    const firstGuess = generateRandomBetween(MIN_NUMBER - 1, MAX_NUMBER, props.userChoise);
     const [currentGuess, setCurrentGuess] = useState(firstGuess);
     const [pastGuesses, setPastGuesses] = useState([firstGuess]);
-    const minGuess = useRef(minNumber);
-    const maxGuess = useRef(maxNumber);
+    const minGuess = useRef(MIN_NUMBER);
+    const maxGuess = useRef(MAX_NUMBER);
     const { userChoise, onGameOver } = props;
     
     useEffect(() => {

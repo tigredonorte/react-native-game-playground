@@ -1,65 +1,91 @@
 import AppLoading from 'expo-app-loading';
-import { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { HeaderComponent } from './src/components/header/header';
-import { minNumber } from './src/constants/game-options';
+import { MIN_NUMBER } from './src/constants/game-options';
 import { initStyle, loadFonts } from './src/initialize/style';
 import { GameComponent } from './src/screens/Game/Game';
 import { GameOverComponent } from './src/screens/GameOver/GameOver';
 import { StartGameComponent } from './src/screens/StartGame/StartGame';
+import { logError } from './src/utils/logger';
 
-export default function App() {
-  const [ appLoaded, setAppLoaded ] = useState(false);
-  const [ userChoise, setUserChoise ] = useState(0);
-  const [ guessRounds, setGuessRounds ] = useState(0);
+interface AppState {
+  appLoaded: boolean;
+  userChoise: number;
+  guessRounds: number;
+  hasError: boolean;
+}
 
-  loadFonts().then(
-    () => setAppLoaded(true), 
-    (err) => {
-      console.log(err);
-      setAppLoaded(true);
-    }
-  );
-  if (!appLoaded) {
-    return <AppLoading />;
+const initialState: AppState = {
+  appLoaded: false,
+  userChoise: 0,
+  guessRounds: 0,
+  hasError: false,
+};
+
+export default class App extends React.Component<{}, AppState> {
+
+  public constructor(props: any) {
+    super(props);
+    this.state = { ...initialState };
+    loadFonts().then(
+      () => {
+        initStyle();
+        this.setState({ appLoaded: true })
+      }, 
+      (err) => {
+        logError(err);
+        this.setState({ appLoaded: false });
+      }
+    );
   }
   
-  initStyle();
+  public static getDerivedStateFromError = () => ({ hasError: true });
+  public componentDidCatch = (error: Error, info: React.ErrorInfo) => logError(error, info);
 
-  const startGameHandler = (selectedNumber: number) => {
-    setUserChoise(selectedNumber);
-    setGuessRounds(0);
-  }
+  private startGameHandler = (selectedNumber: number) => this.setState({ 
+    userChoise: selectedNumber,
+    guessRounds: 0
+  });
 
-  const restartGameHandler = () => {
-    setUserChoise(minNumber - 1);
-  }
+  private restartGameHandler = () => this.setState({ 
+    userChoise: MIN_NUMBER - 1,
+    guessRounds: 0
+  });
 
-  const gameOverHandler = (numOfRounds: number) => {
-    setGuessRounds(numOfRounds);
-    if (numOfRounds === 0) {
-      setUserChoise(minNumber - 1);
+  private gameOverHandler = (numOfRounds: number) => this.setState({ 
+    userChoise: (numOfRounds === 0) ? MIN_NUMBER - 1 : this.state.userChoise,
+    guessRounds: numOfRounds
+  });
+
+  private getContent = () => {
+    if (this.state.userChoise && !isNaN(this.state.userChoise) && this.state.guessRounds <= 0) {
+      return <GameComponent userChoise={this.state.userChoise} onGameOver={this.gameOverHandler}></GameComponent>;
     }
+  
+    else if (this.state.userChoise > 0 ) {
+      return <GameOverComponent 
+        guesses={this.state.guessRounds} 
+        userNumber={this.state.userChoise} 
+        onGameOver={this.restartGameHandler}
+      ></GameOverComponent>;
+    }
+    return <StartGameComponent onStartGame={this.startGameHandler}></StartGameComponent>;
   }
 
-  let content = <StartGameComponent onStartGame={startGameHandler}></StartGameComponent>;
-  if (userChoise && !isNaN(userChoise) && guessRounds <= 0) {
-    content = <GameComponent userChoise={userChoise} onGameOver={gameOverHandler}></GameComponent>;
+  public render(): React.ReactNode {
+    
+    if (!this.state.appLoaded) {
+      return <AppLoading />;
+    }
+  
+    return (
+      <View style={styles.screen}>
+        <HeaderComponent title="Guess a number"></HeaderComponent>
+        { this.getContent() }
+      </View>
+    );
   }
-
-  else if (userChoise > 0 ) {
-    content = <GameOverComponent 
-      guesses={guessRounds} 
-      userNumber={userChoise} 
-      onGameOver={restartGameHandler}
-    ></GameOverComponent>;
-  }
-  return (
-    <View style={styles.screen}>
-      <HeaderComponent title="Guess a number"></HeaderComponent>
-      { content }
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({

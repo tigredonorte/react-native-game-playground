@@ -7,7 +7,7 @@ import { Colors } from '../../constants/colors';
 import { TextInputComponent } from '../../components/text-input/textInput';
 import { NumberContainerComponent } from '../../components/number-container';
 import { MainButtonComponent } from '../../components/main-button/MainButton';
-import { maxNumber, minNumber } from '../../constants/game-options';
+import { MAX_NUMBER, MIN_NUMBER } from '../../constants/game-options';
 
 export interface StartGameInput {
     onStartGame: (selectedNumber: number) => void;
@@ -17,8 +17,8 @@ export const StartGameComponent = (props: StartGameInput) => {
 
     const [enteredValue, setEnteredValue] = useState('');
     const [confirmState, setConfirmState] = useState(false);
-    const [selectedNumer, setSelectedNumer] = useState(minNumber - 1);
-    const maxNumberLength = (maxNumber - 1).toString().length;
+    const [selectedNumer, setSelectedNumer] = useState(MIN_NUMBER - 1);
+    const maxNumberLength = (MAX_NUMBER - 1).toString().length;
     const numberInputHandler = (inputText: string) => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''));
     }
@@ -34,10 +34,10 @@ export const StartGameComponent = (props: StartGameInput) => {
 
     const confirmInputHandler = () => {
         const chosenNumer = parseInt(enteredValue);
-        if (isNaN(chosenNumer) || chosenNumer <= minNumber || chosenNumer >= maxNumber) {
+        if (isNaN(chosenNumer) || chosenNumer <= MIN_NUMBER || chosenNumer >= MAX_NUMBER) {
             Alert.alert(
                 'Invalid Number', 
-                `Number has to been between ${minNumber + 1} and ${maxNumber - 1}`, [
+                `Number has to been between ${MIN_NUMBER + 1} and ${MAX_NUMBER - 1}`, [
                 {text: 'Okay', style: 'destructive', onPress: resetInputHandler},
             ]);
             return;

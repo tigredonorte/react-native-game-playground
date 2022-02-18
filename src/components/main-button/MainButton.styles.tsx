@@ -37,4 +37,8 @@ export const MainButtonStyles = (size: ButtonSizeTypes, type: ButtonTypes) => St
         fontSize: ButtonFontSizes[size],
         color: Colors[`${type}Contrast`]
     },
+    buttonContainer: {
+        borderRadius: 25,
+        overflow: 'hidden'
+    }
 });

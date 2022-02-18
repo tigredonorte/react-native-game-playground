@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Alert, FlatList, Text, View } from 'react-native';
 import { distinctUntilChanged } from 'rxjs';
 import { CardComponent } from '../../components/card/card';
-import { MainButtonComponent } from '../../components/main-button/MainButton';
+import { MainButtonComponent } from '../../components/main-button/MainButton'; // tslint-disable:line
 import { NumberContainerComponent } from '../../components/number-container';
 import { MAX_NUMBER, MIN_NUMBER } from '../../constants/game-options';
 import { getScreenDimensions } from '../../utils/responsiveness';

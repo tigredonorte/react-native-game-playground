@@ -72,7 +72,7 @@ export const StartGameComponent = (props: StartGameInput) => {
                     {btn1Txt}
                 </MainButtonComponent>
                 <MainButtonComponent 
-                    style={{...Style.button, marginTop: screenData.isPortrait ? 0 : 10 }} 
+                    style={{...Style.button, marginTop: screenData.isPortrait ? 0 : 10, marginLeft: screenData.isPortrait ? 5 : 0 }} 
                     type='secondary' 
                     onPress={() => btn2Action()}
                 >

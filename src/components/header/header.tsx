@@ -1,6 +1,6 @@
 import { useObservable } from '@ngneat/react-rxjs';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { distinctUntilChanged } from 'rxjs';
 import { getScreenDimensions } from '../../utils/responsiveness';
 import { HeaderStyles } from './header.styles';

@@ -1,7 +1,7 @@
 import { useObservable } from '@ngneat/react-rxjs';
 import AppLoading from 'expo-app-loading';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { distinctUntilChanged } from 'rxjs';
 import { HeaderComponent } from './src/components/header/header';
 import { MIN_NUMBER } from './src/constants/game-options';
@@ -60,10 +60,10 @@ export default function App() {
     ></GameOverComponent>;
   }
   return (
-    <View style={styles.screen}>
-      <HeaderComponent title="Guess a number"></HeaderComponent>
-      { content }
-    </View>
+    <SafeAreaView style={styles.screen}>
+        <HeaderComponent title="Guess a number"></HeaderComponent>
+        { content }
+    </SafeAreaView>
   );
 }
 

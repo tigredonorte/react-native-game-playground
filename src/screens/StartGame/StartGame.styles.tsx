@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { fontSizer, ScreenData } from '../../utils/responsiveness';
 
@@ -10,7 +10,6 @@ export const StartGameStyles = (screenData: ScreenData) => {
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
-      
     },
     title: {
       fontSize: fontSizer('h2'),
@@ -55,7 +54,7 @@ export const StartGameStyles = (screenData: ScreenData) => {
       alignItems: 'center',
     },
     summaryText: {
-      color: Colors.primary,
+      color: Platform.OS === 'android' ? Colors.primary : Colors.secondary,
       fontSize: fontSizer('h2'),
     },
     containerBase: {

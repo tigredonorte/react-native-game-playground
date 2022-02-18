@@ -1,13 +1,15 @@
+import { useObservable } from '@ngneat/react-rxjs';
 import React, { useState } from 'react';
-import { Alert, Button, Keyboard, Text, TouchableWithoutFeedback, View } from 'react-native';
-import { CardComponent } from '../../components/card/card';
-import { StartGameStyles } from './StartGame.styles';
+import { Alert, Keyboard, KeyboardAvoidingView, ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { distinctUntilChanged } from 'rxjs';
 
-import { Colors } from '../../constants/colors';
-import { TextInputComponent } from '../../components/text-input/textInput';
-import { NumberContainerComponent } from '../../components/number-container';
+import { CardComponent } from '../../components/card/card';
 import { MainButtonComponent } from '../../components/main-button/MainButton';
+import { NumberContainerComponent } from '../../components/number-container';
+import { TextInputComponent } from '../../components/text-input/textInput';
 import { MAX_NUMBER, MIN_NUMBER } from '../../constants/game-options';
+import { getScreenDimensions } from '../../utils/responsiveness';
+import { StartGameStyles } from './StartGame.styles';
 
 export interface StartGameInput {
     onStartGame: (selectedNumber: number) => void;
@@ -18,6 +20,8 @@ export const StartGameComponent = (props: StartGameInput) => {
     const [enteredValue, setEnteredValue] = useState('');
     const [confirmState, setConfirmState] = useState(false);
     const [selectedNumer, setSelectedNumer] = useState(MIN_NUMBER - 1);
+    const [ screenData ] = useObservable(getScreenDimensions().pipe(distinctUntilChanged()));
+
     const maxNumberLength = (MAX_NUMBER - 1).toString().length;
     const numberInputHandler = (inputText: string) => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''));
@@ -47,45 +51,67 @@ export const StartGameComponent = (props: StartGameInput) => {
         setEnteredValue('');
     }
 
-    let confirmedOutput;
-    if (confirmState) {
-        confirmedOutput = <CardComponent style={StartGameStyles.summaryContainer}>
-            <Text style={StartGameStyles.summaryText}> You Selected</Text>
-            <NumberContainerComponent>
-               {selectedNumer}
-            </NumberContainerComponent>
-            <MainButtonComponent onPress={startGame}>Start Game</MainButtonComponent>
+    const Style = StartGameStyles(screenData);
+    const getContainer = (
+        title: string, 
+        extra: any, 
+        btn1Action: Function, 
+        btn1Txt: string, 
+        btn2Action: Function, 
+        btn2Txt: string
+    ) => (
+        <CardComponent style={Style.summaryContainer}>
+            <View style={Style.containerBase}>
+                <Text style={Style.summaryText}>{title}</Text>
+                <View style={Style.containerBase}>
+                    {extra}
+                </View>
+            </View>
+            <View style={Style.buttonContainer}>
+                <MainButtonComponent style={Style.button} onPress={() => btn1Action()}>
+                    {btn1Txt}
+                </MainButtonComponent>
+                <MainButtonComponent 
+                    style={{...Style.button, marginTop: screenData.isPortrait ? 0 : 10 }} 
+                    type='secondary' 
+                    onPress={() => btn2Action()}
+                >
+                    {btn2Txt}
+                </MainButtonComponent>
+            </View>
         </CardComponent>
-    }
+    );
+
+    const container = !confirmState 
+        ? getContainer('Select a Number!',
+            <TextInputComponent 
+                style={Style.textInput}
+                blurOnSubmit 
+                autoCapitalize='none' 
+                autoCorrect={false}
+                keyboardType='number-pad'
+                maxLength={maxNumberLength}
+                value={enteredValue}
+                onChangeText={numberInputHandler}
+            ></TextInputComponent>,
+            confirmInputHandler, 'Confirm', resetInputHandler, 'Cancel'
+        )
+        : getContainer('You Selected', 
+            <NumberContainerComponent>
+                {selectedNumer}
+            </NumberContainerComponent>,
+            startGame, 'Start Game', resetInputHandler, 'Cancel'
+        ) 
 
     return (
-        <TouchableWithoutFeedback onPress={()=>{Keyboard.dismiss()}}>
-            <View style={StartGameStyles.container}>
-                <Text style={StartGameStyles.title}>Start a New Game!</Text>
-                <CardComponent style={StartGameStyles.inputContainer}>
-                    <Text>Select a Number!</Text>
-                    <TextInputComponent 
-                        style={StartGameStyles.textInput}
-                        blurOnSubmit 
-                        autoCapitalize='none' 
-                        autoCorrect={false}
-                        keyboardType='number-pad'
-                        maxLength={maxNumberLength}
-                        value={enteredValue}
-                        onChangeText={numberInputHandler}
-                    ></TextInputComponent>
-
-                    <View style={StartGameStyles.buttonContainer}>
-                        <View style={StartGameStyles.button}>
-                            <MainButtonComponent onPress={confirmInputHandler}>Confirm</MainButtonComponent>
-                        </View>
-                        <View style={StartGameStyles.button}>
-                            <MainButtonComponent type='secondary' onPress={resetInputHandler}>Cancel</MainButtonComponent>
-                        </View>
+        <ScrollView contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
+            <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={30}>
+                <TouchableWithoutFeedback onPress={()=>{Keyboard.dismiss()}} >
+                    <View style={Style.container}>
+                        {container}
                     </View>
-                </CardComponent>
-                {confirmedOutput}
-            </View>
-        </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </ScrollView>
     );
 };

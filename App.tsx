@@ -1,14 +1,19 @@
+import { useObservable } from '@ngneat/react-rxjs';
 import AppLoading from 'expo-app-loading';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { distinctUntilChanged } from 'rxjs';
 import { HeaderComponent } from './src/components/header/header';
 import { MIN_NUMBER } from './src/constants/game-options';
 import { initStyle, loadFonts } from './src/initialize/style';
 import { GameComponent } from './src/screens/Game/Game';
 import { GameOverComponent } from './src/screens/GameOver/GameOver';
 import { StartGameComponent } from './src/screens/StartGame/StartGame';
+import { getScreenDimensions } from './src/utils/responsiveness';
 
 export default function App() {
+  
+  const [ screenSize ] = useObservable(getScreenDimensions().pipe(distinctUntilChanged()));
   const [ appLoaded, setAppLoaded ] = useState(false);
   const [ userChoise, setUserChoise ] = useState(0);
   const [ guessRounds, setGuessRounds ] = useState(0);
@@ -20,10 +25,10 @@ export default function App() {
       setAppLoaded(true);
     }
   );
+
   if (!appLoaded) {
     return <AppLoading />;
   }
-  
   initStyle();
 
   const startGameHandler = (selectedNumber: number) => {
@@ -65,5 +70,5 @@ export default function App() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1
-  },
+  }
 });

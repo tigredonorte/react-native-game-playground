@@ -6,6 +6,7 @@ import { ButtonSizeTypes, ButtonTypes, MainButtonStyles } from './MainButton.sty
 export interface MainButtonInput {
     type?: ButtonTypes;
     size?: ButtonSizeTypes;
+    style?: any;
     onPress?: () => void;
 }
 
@@ -18,7 +19,7 @@ export class MainButtonComponent extends React.Component<MainButtonInput> {
     }
 
     public render = () => (
-        <TouchableOpacity activeOpacity={.8} onPress={this.props?.onPress}>
+        <TouchableOpacity style={this.props.style} activeOpacity={.8} onPress={this.props?.onPress}>
             <View style={this.btnStyle.button}>
                 <Text style={this.btnStyle.buttonText}>
                     {this.props.children}

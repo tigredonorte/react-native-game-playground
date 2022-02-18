@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
 
-export const GameStyles = StyleSheet.create({
+export const GameStylesPortrait = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
@@ -11,10 +11,17 @@ export const GameStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start'
   },
+  numberContainer: {
+    flexDirection: "row",
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 15,
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
+    marginTop: Dimensions.get('window').height > 600 ? 20 : 10,
     width: '90%'
   },
   item: {
@@ -36,11 +43,28 @@ export const GameStyles = StyleSheet.create({
   },
   listContainer: {
     flex: 1, // it's needed for android scroll list
-    width: '100%',
+    width: Dimensions.get('window').width > 350 ? '80%': '100%',
+    marginBottom: 10
   },
   list: {
     flexGrow: 1,
     justifyContent: 'flex-end',
-    // flex: 1, // it's needed for android scroll list
+  },
+  numberContainerTop: {
+  },
+});
+
+export const GameStylesLandscape = StyleSheet.create({
+  guessContainer: {
+    ...GameStylesPortrait.guessContainer,
+    flexDirection: 'row',
+  },
+  numberContainerTop: {
+    width: '50%',
+    marginRight: '5%',
+  },
+  listContainer: {
+    width: '45%',
+    marginBottom: 10
   }
 });

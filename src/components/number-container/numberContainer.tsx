@@ -12,8 +12,9 @@ export class NumberContainerComponent extends React.Component<NumberContainerTyp
     }
 
     public render(): React.ReactNode {
+        const size = this.props.size === 'big' ? 30 : this.props.size === 'medium' ? 20 : 10;
         return (
-            <View style={{ ...NumberContainerStyles.container, padding: this.props.size === 'big' ? 30: 10 }}>
+            <View style={{ ...NumberContainerStyles.container, padding: size }}>
                 <Text style={NumberContainerStyles.number}>{this.props.children}</Text>
             </View>
         );

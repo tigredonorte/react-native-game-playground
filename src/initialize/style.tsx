@@ -25,11 +25,13 @@ export const loadFontsGoogleFont = () => {
 }
 
 import { AppTheme } from '../constants/fonts';
+import { fontSizer } from '../utils/responsiveness';
 
 export const initStyle = () => {
     setCustomText({ 
         style: { 
-          fontFamily: AppTheme.defaultFont
+          fontFamily: AppTheme.defaultFont,
+          fontSize: fontSizer()
         }
     });
 }
